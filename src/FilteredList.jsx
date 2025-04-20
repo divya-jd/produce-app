@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { DropdownButton, MenuItem } from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
 import List from './List';
 
 class FilteredList extends Component {
@@ -29,16 +29,22 @@ class FilteredList extends Component {
     return (
       <div className="filter-list">
         <h1>Produce Search</h1>
-        <DropdownButton id="typeDropdown" title={`Type: ${this.state.type}`}>
-          <MenuItem eventKey="all" onSelect={this.onTypeSelect}>All</MenuItem>
-          <MenuItem eventKey="fruit" onSelect={this.onTypeSelect}>Fruit</MenuItem>
-          <MenuItem eventKey="vegetable" onSelect={this.onTypeSelect}>Vegetable</MenuItem>
-        </DropdownButton>
+        <Dropdown>
+          <Dropdown.Toggle variant="success" id="dropdown-basic">
+            Type: {this.state.type}
+          </Dropdown.Toggle>
+  
+          <Dropdown.Menu>
+            <Dropdown.Item eventKey="all" onSelect={this.onTypeSelect}>All</Dropdown.Item>
+            <Dropdown.Item eventKey="fruit" onSelect={this.onTypeSelect}>Fruit</Dropdown.Item>
+            <Dropdown.Item eventKey="vegetable" onSelect={this.onTypeSelect}>Vegetable</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
         <input type="text" placeholder="Search" onChange={this.onSearch} />
         <List items={this.props.items.filter(this.filterItem)} />
       </div>
     );
   }
-}
+} // <-- This closing brace was missing
 
 export default FilteredList;
