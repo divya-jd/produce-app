@@ -1,20 +1,19 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class List extends Component {
-  renderList() {
-    const items = this.props.items.map(item => {
-      return <li key={item.name}>{item.name}</li>
-    });
-    return items;
-  }
-
-  render() {
-    return (
-      <ul>
-        {this.renderList()}
-      </ul>
-    );
-  }
-}
+const List = ({ items, counts, onAdd }) => {
+  return (
+    <ul>
+      {items.map(item => (
+        <li key={item.name} style={{ marginBottom: "10px" }}>
+          <strong>{item.name}</strong> ({item.type})
+          <button onClick={() => onAdd(item.name)} style={{ marginLeft: "10px" }}>
+            Add
+          </button>
+          <span style={{ marginLeft: "10px" }}>Count: {counts[item.name] || 0}</span>
+        </li>
+      ))}
+    </ul>
+  );
+};
 
 export default List;

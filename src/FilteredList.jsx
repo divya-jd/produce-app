@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { Dropdown, DropdownButton } from 'react-bootstrap';
 import List from './List';
 
 class FilteredList extends Component {
@@ -7,44 +7,57 @@ class FilteredList extends Component {
     super(props);
     this.state = {
       search: "",
-      type: "all"
+      type: "all",
+      counts: {}
     };
   }
 
   onSearch = (event) => {
-    this.setState({search: event.target.value.trim().toLowerCase()});
-  }
+    this.setState({ search: event.target.value.trim().toLowerCase() });
+  };
 
-  onTypeSelect = (eventKey) => {
-    this.setState({type: eventKey});
-  }
+  onFilterSelect = (eventKey) => {
+    this.setState({ type: eventKey });
+  };
 
   filterItem = (item) => {
     const matchesSearch = item.name.toLowerCase().includes(this.state.search);
     const matchesType = this.state.type === "all" || item.type.toLowerCase() === this.state.type;
     return matchesSearch && matchesType;
-  }
+  };
+
+  handleAdd = (itemName) => {
+    this.setState(prevState => ({
+      counts: {
+        ...prevState.counts,
+        [itemName]: (prevState.counts[itemName] || 0) + 1
+      }
+    }));
+  };
 
   render() {
+    const filteredItems = this.props.items.filter(this.filterItem);
+
     return (
       <div className="filter-list">
         <h1>Produce Search</h1>
-        <Dropdown>
-          <Dropdown.Toggle variant="success" id="dropdown-basic">
-            Type: {this.state.type}
-          </Dropdown.Toggle>
-  
-          <Dropdown.Menu>
-            <Dropdown.Item eventKey="all" onSelect={this.onTypeSelect}>All</Dropdown.Item>
-            <Dropdown.Item eventKey="fruit" onSelect={this.onTypeSelect}>Fruit</Dropdown.Item>
-            <Dropdown.Item eventKey="vegetable" onSelect={this.onTypeSelect}>Vegetable</Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+
+        <DropdownButton id="typeDropdown" title="Type">
+          <Dropdown.Item eventKey="all" onSelect={this.onFilterSelect}>All</Dropdown.Item>
+          <Dropdown.Item eventKey="fruit" onSelect={this.onFilterSelect}>Fruit</Dropdown.Item>
+          <Dropdown.Item eventKey="vegetable" onSelect={this.onFilterSelect}>Vegetable</Dropdown.Item>
+        </DropdownButton>
+
         <input type="text" placeholder="Search" onChange={this.onSearch} />
-        <List items={this.props.items.filter(this.filterItem)} />
+
+        <List
+          items={filteredItems}
+          counts={this.state.counts}
+          onAdd={this.handleAdd}
+        />
       </div>
     );
   }
-} // <-- This closing brace was missing
+}
 
 export default FilteredList;
