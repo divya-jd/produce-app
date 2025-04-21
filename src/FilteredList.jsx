@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Dropdown, DropdownButton } from 'react-bootstrap';
+import { Container, Row, Col, DropdownButton, Dropdown, Form, Button, Card, Badge } from 'react-bootstrap';
 import List from './List';
 
 class FilteredList extends Component {
@@ -8,54 +8,66 @@ class FilteredList extends Component {
     this.state = {
       search: "",
       type: "all",
-      counts: {}
+      count: 0
     };
   }
 
   onSearch = (event) => {
     this.setState({ search: event.target.value.trim().toLowerCase() });
-  };
+  }
 
   onFilterSelect = (eventKey) => {
     this.setState({ type: eventKey });
-  };
+  }
+
+  incrementCount = () => {
+    this.setState((prevState) => ({ count: prevState.count + 1 }));
+  }
 
   filterItem = (item) => {
     const matchesSearch = item.name.toLowerCase().includes(this.state.search);
     const matchesType = this.state.type === "all" || item.type.toLowerCase() === this.state.type;
     return matchesSearch && matchesType;
-  };
-
-  handleAdd = (itemName) => {
-    this.setState(prevState => ({
-      counts: {
-        ...prevState.counts,
-        [itemName]: (prevState.counts[itemName] || 0) + 1
-      }
-    }));
-  };
+  }
 
   render() {
-    const filteredItems = this.props.items.filter(this.filterItem);
-
     return (
-      <div className="filter-list">
-        <h1>Produce Search</h1>
+      <Container className="mt-5">
+        <Card className="p-4 shadow-lg">
+          <h2 className="mb-4 text-center">🥦 Produce Search 🍎</h2>
 
-        <DropdownButton id="typeDropdown" title="Type">
-          <Dropdown.Item eventKey="all" onSelect={this.onFilterSelect}>All</Dropdown.Item>
-          <Dropdown.Item eventKey="fruit" onSelect={this.onFilterSelect}>Fruit</Dropdown.Item>
-          <Dropdown.Item eventKey="vegetable" onSelect={this.onFilterSelect}>Vegetable</Dropdown.Item>
-        </DropdownButton>
+          <Row className="mb-3">
+            <Col md={6}>
+              <Form.Control
+                type="text"
+                placeholder="🔍 Search for an item..."
+                onChange={this.onSearch}
+              />
+            </Col>
+            <Col md={3}>
+              <DropdownButton
+                variant="outline-primary"
+                title={`Filter: ${this.state.type.charAt(0).toUpperCase() + this.state.type.slice(1)}`}
+                onSelect={this.onFilterSelect}
+              >
+                <Dropdown.Item eventKey="all">All</Dropdown.Item>
+                <Dropdown.Item eventKey="fruit">Fruit</Dropdown.Item>
+                <Dropdown.Item eventKey="vegetable">Vegetable</Dropdown.Item>
+              </DropdownButton>
+            </Col>
+            <Col md={3} className="text-end">
+              <Button variant="success" onClick={this.incrementCount}>
+                Click Me ➕
+              </Button>
+              <Badge bg="dark" className="ms-2 fs-6">{this.state.count}</Badge>
+            </Col>
+          </Row>
 
-        <input type="text" placeholder="Search" onChange={this.onSearch} />
+          <hr />
 
-        <List
-          items={filteredItems}
-          counts={this.state.counts}
-          onAdd={this.handleAdd}
-        />
-      </div>
+          <List items={this.props.items.filter(this.filterItem)} />
+        </Card>
+      </Container>
     );
   }
 }
